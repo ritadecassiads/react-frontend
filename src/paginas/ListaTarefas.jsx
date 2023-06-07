@@ -2,8 +2,14 @@ import { useState, useEffect } from "react";
 import api from "../services/api";
 
 function ListaTarefas(){
+    // lista de tarefas que vem do get 
     const [tarefas, setTarefas] = useState([]);
+    // uma unica tarefa alterada pelo botao editar e enviada no put
     const [tarefa, setTarefa] = useState(null);
+    // tarefa com o campo de "feito" alterado
+    const [tarefaFeita, setTarefaFeita] = useState({
+      
+    });
   
   function getTarefas() {
     api.get("/tarefas/listar").then((response) => {
@@ -14,25 +20,27 @@ function ListaTarefas(){
       });
   }
 
-  function salvarTarefa(){
-    api.post("/tarefas/salvar", tarefa).then((response) => {
-        alert(response.data.message)
-
-    }).catch((err) => {
-        alert("Ocorreu um erro ao cadastrar a tarefa")
-        console.error("Erro ao salvar tarefa ------>" + err);
-      });
-  }
-
   function alterarTarefa(){
-    api.post("/tarefas/salvar", tarefa).then((response) => {
+    api.put("/tarefas/atualizar/" + tarefa.idTarefa, tarefa).then((response) => {
         alert(response.data.message)
 
     }).catch((err) => {
         alert("Ocorreu um erro ao alterar a tarefa")
-        console.error("Erro ao salvar tarefa ------>" + err);
+        console.error("Erro ao alterar tarefa ------>" + err);
       });
   }
+
+  function excluirTarefa(id) {
+    api.delete("/tarefas/excluir/" + id).then((response) => {
+      alert(response.data.message)
+
+  }).catch((err) => {
+      alert("Ocorreu um erro ao excluir a tarefa")
+      console.error("Erro ao excluir tarefa ------>" + err);
+    });
+  }
+
+
 
   useEffect(() => {
     getTarefas()
@@ -60,12 +68,12 @@ function ListaTarefas(){
   function getFormulario(){
       return (
         <form>
+        {/* enquanto o usuario digita altero o estado do campo titulo atraves do handleChange() */}
               <label for="titulo">Titulo</label>
               <input 
                 type="text" 
                 name="titulo"
                 value={tarefa.titulo}
-                // enquanto o usuario digita altero o estado do campo titulo atraves do setTarefa 
                 onChange={(e) => {
                   handleChange(e)
                 }}
@@ -91,10 +99,11 @@ function ListaTarefas(){
                 }}
                  />
               <button onClick={() => {
-                salvarTarefa()
+                alterarTarefa()
               }}>Salvar</button>
               <br />
               <button onClick={() => {
+                // seto a tarefa como null pra entrar a condição que mostra a listagem
                 setTarefa(null)
               }}>Cancelar</button>
           </form>
@@ -108,21 +117,23 @@ function ListaTarefas(){
         return (
           <tr>
             <td>
-              <input type="hidden" name="idTarefa" value={tarefa.idTarefa}/>
-              <input 
-                type="checkbox" 
-                name="feito" 
-                value="true"
-                onChange={(e) => {
-                  handleChange(e)
-                }}
-                /> 
                 {tarefa.titulo}
             </td>
             <td>{tarefa.descricao}</td>
             <td>
               {formatarData(tarefa.data_conclusao)}
-              <button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      "Confirmar a exclusão da tarefa " + tarefa.titulo + "?"
+                    )
+                  ) {
+                    excluirTarefa(tarefa.idTarefa);
+                  }
+                }}
+                >
                 Excluir
               </button>
 
@@ -160,6 +171,7 @@ function ListaTarefas(){
       <div>
         <h2>Tarefas</h2>
         <div>
+          {/* quando a tarefa for null(vem por padrao assim que carrega a tela) traz a lista, quando não(é pq foi clicado no botao editar) e aí renderiza o formulario de alteração */}
           {tarefa == null ? mostraTarefas() : getFormulario()}
         </div>
       </div>
