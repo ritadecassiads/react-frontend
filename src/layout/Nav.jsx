@@ -12,7 +12,7 @@ function Nav() {
           <NavLink to="/cadastros">Cadastro de Tarefas</NavLink>
         </li>
         <li>
-          <NavLink to="/montagem">Lista de Tarefas</NavLink>
+          <NavLink to="/listaTarefas">Lista de Tarefas</NavLink>
         </li>
         <li>
           <NavLink to="/util">Sobre</NavLink>
