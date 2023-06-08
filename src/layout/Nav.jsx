@@ -9,10 +9,10 @@ function Nav() {
           <NavLink to="/">Home</NavLink>
         </li>
         <li>
-          <NavLink to="/cadastros">Cadastro de Tarefas</NavLink>
+          <NavLink to="/cadastros">Cadastro</NavLink>
         </li>
         <li>
-          <NavLink to="/listaTarefas">Lista de Tarefas</NavLink>
+          <NavLink to="/tarefas">Tarefas</NavLink>
         </li>
         <li>
           <NavLink to="/util">Sobre</NavLink>

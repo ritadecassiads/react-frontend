@@ -14,10 +14,12 @@
     - quem comanda a ação de cada componente é o react
 
 ## FAZER ##
--> Continuar o PUT e o DELETE
-
-- formatar data ao editar
-
 ----> Layout <----
 -> OK Formatar data para mostrar na tela
+-> OK Incluir risco na tarefa depois que foi concluida
 -> Usar mascara de data no input e puxar no formato certo pro back
+
+-> OK Continuar o PUT e o DELETE
+
+->  Continuar do select da equipe
+    - puxar da lista de tarefas e da lista de usuarios

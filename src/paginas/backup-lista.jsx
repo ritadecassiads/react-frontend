@@ -6,6 +6,10 @@ function ListaTarefas(){
     const [tarefas, setTarefas] = useState([]);
     // uma unica tarefa alterada pelo botao editar e enviada no put
     const [tarefa, setTarefa] = useState(null);
+    // tarefa com o campo de "feito" alterado
+    const [tarefaFeita, setTarefaFeita] = useState({
+      
+    });
   
   function getTarefas() {
     api.get("/tarefas/listar").then((response) => {
@@ -18,7 +22,7 @@ function ListaTarefas(){
 
   function alterarTarefa(){
     api.put("/tarefas/atualizar/" + tarefa.idTarefa, tarefa).then((response) => {
-      if (tarefa.feito === true) {
+      if (tarefa.feito == true) {
         alert("Tarefa concluída com sucesso!")
       } else {
         alert(response.data.message)
@@ -32,7 +36,7 @@ function ListaTarefas(){
 
   function excluirTarefa(id) {
     api.delete("/tarefas/excluir/" + id).then((response) => {
-      // alert(response.data.message)
+      alert(response.data.message)
 
   }).catch((err) => {
       alert("Ocorreu um erro ao excluir a tarefa")
@@ -40,17 +44,19 @@ function ListaTarefas(){
     });
   }
 
+
+
   useEffect(() => {
     getTarefas()
   }, []);
 
   function formatarData(dataString) {
-    const data = new Date(dataString) ;
-    const dia = data.getDate() + 1;
+    const data = new Date(dataString);
+    const dia = data.getDate();
     const mes = data.getMonth() + 1; // Os meses são indexados de 0 a 11
     const ano = data.getFullYear();
   
-    const dataFormatada = `${dia}-${mes}-${ano}`;
+    const dataFormatada = `${dia}/${mes}/${ano}`;
   
     return dataFormatada;
   }
@@ -62,15 +68,6 @@ function ListaTarefas(){
       [name]: value
     }));
   };
-
-  function limpaTarefasFeitas() {
-    tarefas.map((tarefa) => {
-      if(tarefa.feito === true){
-        excluirTarefa(tarefa.idTarefa)
-      }
-    })
-    alert("Concluídas limpas com sucesso!")
-  }
 
   function getFormulario(){
       return (
@@ -87,7 +84,7 @@ function ListaTarefas(){
                   handleChange(e)
                 }}
                 />
-              <br />
+              <br /> <br />
               <label for="descricao">Descricao: </label>
               <input 
                 class="input-tarefa"
@@ -98,7 +95,7 @@ function ListaTarefas(){
                   handleChange(e)
                 }}
                 />
-              <br />
+              <br /> <br />
               <label for="dataConclusao">Data de conclusão: </label>
               <input 
                 class="input-tarefa"
@@ -116,7 +113,6 @@ function ListaTarefas(){
               }}>Salvar</button>
              
               <button 
-              class="button-cancelar"
               onClick={() => {
                 // seto a tarefa como null pra entrar a condição que mostra a listagem
                 setTarefa(null)
@@ -143,16 +139,14 @@ function ListaTarefas(){
             <td>
               {formatarData(tarefa.data_conclusao)}
               <button
-                class="button-excluir"
                 type="button"
                 onClick={() => {
                   if (
                     window.confirm(
-                      "Confirmar a exclusão da tarefa " + " ' " + tarefa.titulo + " ' " + "?"
+                      "Confirmar a exclusão da tarefa " + tarefa.titulo + "?"
                     )
                   ) {
                     excluirTarefa(tarefa.idTarefa);
-                    alert("Tarefa excluída com sucesso")
                   }
                 }}
                 >
@@ -160,7 +154,6 @@ function ListaTarefas(){
               </button>
 
               <button
-                class="button-editar"
                 type="button"
                 name="editar"
                 onClick={() => {
@@ -192,51 +185,28 @@ function ListaTarefas(){
 
   function mostraTarefas() {
     return (
-      <div class="div-tarefas">
-        <table class="table1">
-          <thead>
+        <fieldset>
+          <tbody>
               <tr class="tr-tarefas-concluidas">
                   <th>Titulo</th>
                   <th>Descrição</th>
                   <th>Data de conclusão</th>
+                  <th class="titulo-concluidas">Concluídas</th>
               </tr>
-          </thead>
-          <tbody>
               {getInfos()}
+              {getTarefasFeitas()}
 
           </tbody>
-        </table>
-
-        <table class="table2">
-        <thead>
-            <tr class="tr-tarefas-concluidas">
-                <th class="">Concluídas</th>
-            </tr>
-        </thead>
-        <tbody>
-            {getTarefasFeitas()}
-            <tr>
-              <button
-                class="button-limpar"
-                type="button"
-                name="limpar"
-                onClick={() => {
-                  limpaTarefasFeitas()
-              }}
-              >Limpar</button>
-            </tr>
-        </tbody>
-        </table>
-      </div>
+        </fieldset>
     )
   }
 
     return (
-      <div class="div-pai">
+      <div>
         <h2>Tarefas</h2>
         <div>
           {/* quando a tarefa for null(vem por padrao assim que carrega a tela) traz a lista, quando não(é pq foi clicado no botao editar) e aí renderiza o formulario de alteração */}
-          {tarefa === null ? mostraTarefas() : getFormulario()}
+          {tarefa == null ? mostraTarefas() : getFormulario()}
         </div>
       </div>
     )
