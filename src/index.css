@@ -166,6 +166,10 @@ a, h1, h2, h3, ul, html, body, #root {
     margin: 15px;
   }
 
+  .button-concluida{
+    background-color: #02d685;
+  }
+
   .div-pai{
     text-align: center;
     position: absolute;
@@ -175,8 +179,15 @@ a, h1, h2, h3, ul, html, body, #root {
   }
 
   label{
-    width: 150px;
+    width: 200px;
     display: inline-block;
     text-align: left;
     margin-top: 8px;
   }
+
+  .select{
+    width: 400px;
+    margin: 20px auto;
+  }
+
+

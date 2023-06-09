@@ -2,30 +2,20 @@ import { useState, useEffect } from "react";
 import api from "../services/api";
 import Select from "react-select";
 
-function CadastrarTarefa() {
+function Cadastros() {
   // ja inicializo o hook montando o objeto vazio para poder usar no if que renderiza os botões ou os formulario
   const [tarefa, setTarefa] = useState(null);
   const [usuario, setUsuario] = useState(null);
   const [equipe, setEquipe] = useState(null);
 
   // para recuperar as listas para o select
-  const [tarefas, setTarefas] = useState([]);
-  const [usuarios, setUsuarios] = useState([]);
-  const [equipes, setEquipes] = useState([]);
+  const [listaTarefas, setListaTarefas] = useState([]); // inicio todos como um array vazio
+  const [listaUsuarios, setListaUsuarios] = useState([]);
+  const [listaEquipes, setListaEquipes] = useState([]);
 
-  const [tarefasSelecionadas, setTarefasSelecionadas] = useState([]);
-
-  // const selectStyles = {
-  //   control: (baseStyles, state) => ({
-  //     ...baseStyles,
-  //     margin: 0,
-  //     padding: "5px 0",
-  //     borderRadius: 3,
-  //     borderColor: "gray",
-  //     boxShadow: state.isFocused ? "0 0 0 2px black" : 0,
-  //     ":hover": { borderColor: "black" },
-  //   }),
-  // };
+  // para utulizar no estado do componente Select
+  const [selectedTarefa, setSelectedTarefa] = useState(''); // inicio como string vazia pq preciso de so um elemento
+  const [selectedUsuarios, setSelectedUsuarios] = useState([]); // inicio como array vazio pq a equipe precisa de um array de usuario
 
   function salvarTarefa(){
     api.post("/tarefas/salvar", tarefa).then((response) => {
@@ -50,7 +40,7 @@ function CadastrarTarefa() {
   }
 
   function salvarEquipe(){
-    api.post("/equipe/salvar", usuario).then((response) => {
+    api.post("/equipe/salvar", equipe).then((response) => {
         alert(response.data.message)
         reiniciarEstadoDosObjetos()
 
@@ -62,7 +52,18 @@ function CadastrarTarefa() {
 
   function getTarefas() {
     api.get("/tarefas/listar").then((response) => {
-      setTarefas(response.data);
+      const arrayTarefas = []
+
+      // guardo apenas as tarefas não concluídas no array
+      response.data.forEach(tarefa => {
+        if(tarefa.feito === false){
+          arrayTarefas.push(tarefa)
+        }
+      });
+      
+      // seto as tarefas na lista
+      setListaTarefas(arrayTarefas);
+      
     }).catch((err) => {
         alert("Ocorreu um erro ao listar as tarefas")
         console.error("Erro ao listar tarefas ------>" + err);
@@ -71,7 +72,8 @@ function CadastrarTarefa() {
 
   function getUsuarios() {
     api.get("/usuarios/listar").then((response) => {
-      setUsuarios(response.data);
+      setListaUsuarios(response.data);
+
     }).catch((err) => {
         alert("Ocorreu um erro ao listar usuarios")
         console.error("Erro ao listar usuarios ------>" + err);
@@ -80,98 +82,114 @@ function CadastrarTarefa() {
 
   function getEquipes() {
     api.get("/equipe/listar").then((response) => {
-      setEquipes(response.data);
+      setListaEquipes(response.data);
+
     }).catch((err) => {
         alert("Ocorreu um erro ao listar equipes")
         console.error("Erro ao listar equipes ------>" + err);
       });
   }
 
+  // dou um get primeiro nas tarefas e usuarios
   useEffect(() => {
     getTarefas()
     getUsuarios()
   }, [])
   
+
   useEffect(() => {
-    if(tarefas && usuarios){
+    // se der sucesso aos lista tarefas e usuarios, dou um get na equipe
+    if(listaTarefas && listaUsuarios){
       getEquipes()
-      console.log("passou pelo useEffect das equipes")
     }
   }, [])
 
+  // seto tudo como null pra voltar pra tela dos botões
   function reiniciarEstadoDosObjetos(){
     setTarefa(null)
     setUsuario(null)
     setEquipe(null)
   }
+
   function getSelectTarefas() {
+    // guardo o elementos da lista dentro de um vetor pois o componente Select precisa dos campos value e label pra renderizar
+    const vetorTarefas = listaTarefas.map(tarefa => ({
+      // passo o id pq pra fazer o post da equipe preciso do id
+      value: tarefa.idTarefa,
+      // utilizo a label para renderizar na tela o titulo
+      label: tarefa.titulo,
+    }));
+
+    // componente select do react
     return (
       <div>
-          <select 
-            name="tarefa" 
-            value={tarefa} 
-            onChange={(e) => {
-              handleSelectTarefas(e)
-            }}  
-            >
-            {tarefas.map((t) => {
-              <option value={t.idTarefa} key={t.idTarefa}>{t.titulo}</option>
-            })}
+        <Select
+          className="select"
+          options={vetorTarefas} // renderizas os itens, precisa ter value e label
+          isSearchable={true} // permite digitação pra pesquisar
+          value={selectedTarefa} // pra controlar o estado pelo React
 
-          </select>
+          onChange={(item) => {
+            // item = {value: label: } - objeto com value e label
+            handleSelectTarefas(item)
+          }}
+        />
+      </div>
+    )
+  }
+
+  function getSelectUsuario() {
+    const vetorUsuarios = listaUsuarios.map(usuario => ({
+      value: usuario.idUsuario,
+      label: usuario.nome,
+    }));
+
+    return (
+      <div>
+
+        <Select
+          className="select"
+          options={vetorUsuarios}
+          isSearchable={true}
+          value={selectedUsuarios} // por eu ter inicializado o useState como array vazio ele ja entende que é um array
+          isMulti
+          onChange={(itens) => {
+            // itens = array de objeto com value e label
+            handleSelectUsuarios(itens)
+            //handleChangeEquipe()
+          }}
+        />
       </div>
     )
   }
 
 
-  function handleSelectTarefas(e) {
+  function handleSelectTarefas(item) {
+    // seto no campo tarefa da equipe o item.value que tem valor do id aqui
+    setSelectedTarefa(item)
     setEquipe({
       ...equipe,
-      tarefa: {
-        idTarefa: e.target.value,
-        titulo: e.target.options[e.target.selectedIndex].text,
-      }
+      tarefa: item.value
+    })
+  }
+
+  function handleSelectUsuarios(itens) {
+    // seto para controle de estado do React
+    setSelectedUsuarios(itens)
+    // guardo no vetor só o value(determinei ali em cima que seria o idUsuario) - vetor de ids de usuario
+    const vetorIntegrantes = itens.map(item => (
+      item.value
+    ))
+    
+    // com o "...equipe" pego todos os valores anteriores(tarefa por ex) e incluo o campo integrantes com um array de usuarios
+    setEquipe({
+      ...equipe,
+      integrantes: vetorIntegrantes
     })
   }
 
 
-  // function getSelectTarefas() {
-  //   // percorro o array de tarefas para verificar se em algum equipe ja possui a tarefa
-  //   const tarefasAnteriores = tarefas.map(tarefa => {
-  //     if (equipes.tarefa.includes(tarefa.idTarefa)) {
-  //       return {
-  //         value: tarefa._id,
-  //         label: tarefa.titulo,
-  //       };
-  //     }
-  //     return null;
-  //     // para remover os elementos null do array resultante
-  //   }).filter(tarefa => tarefa !== null);
-  
-  //   const vetorTarefas = tarefas.map(tarefa => ({
-  //     value: tarefa.idTarefa,
-  //     label: tarefa.titulo,
-  //   }));
-  
-  //   return (
-  //     <Select
-  //       isMulti
-  //       isClearable={false}
-  //       value={tarefasSelecionadas}
-  //       defaultValue={tarefasAnteriores}
-  //       onChange={onChangeSelectTarefas}
-  //       options={vetorTarefas}
-  //       styles={selectStyles}
-  //     />
-  //   );
-  // }
-
-  // function onChangeSelectTarefas(valores) {
-  //   setTarefasSelecionadas(valores);
-  //   const tarefasIds = valores.map(valor => valor.value);
-  //   alterarEquipe("tarefa", tarefasIds, equipe.idEquipe);
-  // }
-
+  // pra controlar os botões, se algum dos botoes é clicado(seto os objetos com campos vazio pra deixar de ser null) e se objeto não é nulo vai renderizar seus respectivos formularios
   function inicializaTarefa() {
     setTarefa({
       titulo: "",
@@ -198,14 +216,6 @@ function CadastrarTarefa() {
     })
   }
 
-  // function alterarEquipe(campo, valor, id) {
-  //   equipe[campo] = valor;
-  //   setEquipe({
-  //     idEquipe: id,
-  //     ...equipe,
-  //   });
-  // }
-
   const handleChangeUsuario= (e) => {
     const { name, value } = e.target;
     setUsuario((prevState) => ({
@@ -214,15 +224,7 @@ function CadastrarTarefa() {
     }));
   };
 
-    const handleChangeEquipe = (e) => {
-    const { name, value } = e.target;
-    setUsuario((prevState) => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-
-  // preciso chamar a função que altera o valor do campo em tempo real pra mostrar na tela, caso contrario nao deixa digitar
+  // preciso chamar a função que altera o valor do campo em tempo real pra mostrar na tela, controle de estado do React
   // responsável por atualizar o estado tarefa sempre que um campo de entrada do formulário é alterado
   const handleChangeTarefa = (e) => {
     // pega o name(titulo, descricao, data...) e o value(o que o usuario digitar no input) e vou setando nos campos da tarefa
@@ -235,29 +237,18 @@ function CadastrarTarefa() {
     }));
   };
 
+  // formulario pra cadastrar equipe
   function getFormularioEquipe() {
     return (
       <form>
-            <label for="tarefa">Tarefa:</label>
+            <label for="tarefa">Selecione a tarefa:</label>
             {getSelectTarefas()}
-            {/* <input
-              type="text" 
-              name="tarefa"
-              value={equipe.tarefa}
-              onChange={(e) => {
-                handleChangeTarefa(e)
-              }}
-              /> */}
+
             <br />
+
             <label for="integrantes">Integrantes:</label>
-            <input 
-              type="text" 
-              name="integrantes" 
-              value={equipe.integrantes}
-              onChange={(e) => {
-                handleChangeEquipe(e)
-              }}
-              />
+            {getSelectUsuario()}
+
                <br /> <br />
             <button 
               class="button-cancelar"
@@ -274,6 +265,7 @@ function CadastrarTarefa() {
     )
   }
 
+  // formulario pra cadastrar usuario
   function getFormularioUsuario() {
     return (
       <form>
@@ -342,6 +334,7 @@ function CadastrarTarefa() {
     )
   }
 
+  // formulario pra cadastrar tarefa
   function getFormularioTarefa() {
     return (
       <form>
@@ -393,6 +386,7 @@ function CadastrarTarefa() {
     )
   }
   
+  // verifico qual dos objetos foi iniciado(atraves do botao da primeira tela) pra renderizar seu respectivo formulario
   function getFormulario() {
     if (tarefa != null) {
       return (
@@ -465,4 +459,4 @@ function CadastrarTarefa() {
   );
 }
 
-export default CadastrarTarefa;
+export default Cadastros;

@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './layout/Layout'
 import Home from './paginas/Home';
-import CadastrarTarefa from './paginas/CadastrarTarefa';
-import ListaTarefas from './paginas/ListaTarefas';
-import Util from './paginas/Util';
+import Cadastros from './paginas/Cadastros';
+import Lista from './paginas/Lista';
+import Equipe from './paginas/Equipe';
 import Sobre from './paginas/Sobre';
 
 // o element é quem vai renderizar a tela
@@ -12,9 +12,9 @@ function App() {
     <>
       <Routes>
         <Route path='/' element={<Layout><Home/></Layout>}/>
-        <Route path='/cadastros' element={<Layout><CadastrarTarefa/></Layout>}/>
-        <Route path='/tarefas' element={<Layout><ListaTarefas/></Layout>}/>
-        <Route path='/util' element={<Layout><Util/></Layout>}/>
+        <Route path='/cadastros' element={<Layout><Cadastros/></Layout>}/>
+        <Route path='/tarefas' element={<Layout><Lista/></Layout>}/>
+        <Route path='/equipes' element={<Layout><Equipe/></Layout>}/>
         <Route path='/sobre' element={<Layout><Sobre/></Layout>}/>
       </Routes>
     </>

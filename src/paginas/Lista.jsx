@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../services/api";
 
-function ListaTarefas(){
+function Lista(){
     // lista de tarefas que vem do get 
     const [tarefas, setTarefas] = useState([]);
     // uma unica tarefa alterada pelo botao editar e enviada no put
@@ -24,6 +24,7 @@ function ListaTarefas(){
         alert(response.data.message)
       }
 
+      setTarefa(null)
     }).catch((err) => {
         alert("Ocorreu um erro ao alterar a tarefa")
         console.error("Erro ao alterar tarefa ------>" + err);
@@ -121,7 +122,9 @@ function ListaTarefas(){
                 // seto a tarefa como null pra entrar a condição que mostra a listagem
                 setTarefa(null)
               }}>Cancelar</button>
-              <button 
+              <button
+              class="button-concluida"
+              type="button" 
               onClick={() => {
                 tarefa.feito = true;
                 alterarTarefa()
@@ -242,4 +245,4 @@ function ListaTarefas(){
     )
 }
 
-export default ListaTarefas;
+export default Lista;

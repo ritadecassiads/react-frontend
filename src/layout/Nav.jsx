@@ -15,7 +15,7 @@ function Nav() {
           <NavLink to="/tarefas">Tarefas</NavLink>
         </li>
         <li>
-          <NavLink to="/util">Sobre</NavLink>
+          <NavLink to="/equipes">Equipes</NavLink>
         </li>
         <li>
           <NavLink to="/sobre">Sobre</NavLink>
