@@ -18,10 +18,12 @@
 ----> Layout <----
 -> OK Formatar data para mostrar na tela
 -> OK Incluir risco na tarefa depois que foi concluida
--> Usar mascara de data no input e puxar no formato certo pro back
-
 
 -> OK Continuar do select da equipe
-    - puxar da lista de tarefas e da lista de usuarios
+    - OK puxar da lista de tarefas e da lista de usuarios
 
--> Fechar a tela após concluir tarefa
+-> OK Fechar a tela após concluir tarefa
+
+-> Fazer login na Home futuramente
+
+-> Alterar a equipe com a tarefa atualizada com "feito = true"

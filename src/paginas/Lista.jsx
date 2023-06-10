@@ -128,7 +128,7 @@ function Lista(){
               onClick={() => {
                 tarefa.feito = true;
                 alterarTarefa()
-              }}>Concluída</button>
+              }}>Concluir</button>
           </form>
       )
   }
@@ -205,7 +205,7 @@ function Lista(){
               </tr>
           </thead>
           <tbody>
-              {getInfos()}
+              {tarefas.length === 0 ? <p>Não há tarefas cadastradas</p> : getInfos()}
 
           </tbody>
         </table>
@@ -218,6 +218,9 @@ function Lista(){
         </thead>
         <tbody>
             {getTarefasFeitas()}
+            {
+              tarefas.length === 0 ? <><p></p></> : 
+            
             <tr>
               <button
                 class="button-limpar"
@@ -228,6 +231,7 @@ function Lista(){
               }}
               >Limpar</button>
             </tr>
+            }
         </tbody>
         </table>
       </div>
