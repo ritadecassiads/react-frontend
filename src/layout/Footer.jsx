@@ -1,6 +1,10 @@
-function Footer(){
+function Footer() {
     return (
-        <footer>Rodapé</footer>
+        <footer>
+            <b>
+                Julliana, Lucas, Rita, Sophia e Vinicius
+            </b>
+        </footer>
     )
 }
 

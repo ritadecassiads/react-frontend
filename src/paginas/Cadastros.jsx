@@ -122,7 +122,7 @@ function Cadastros() {
 
     // componente select do react
     return (
-      <div>
+      <div>        
         <Select
           className="select"
           options={vetorTarefas} // renderizas os itens, precisa ter value e label
@@ -452,7 +452,7 @@ function Cadastros() {
 
   return (
     <div class="div-pai">
-        <h2>Aréa de cadastro</h2>
+        <h2>Área de cadastro</h2>
         <br />
         {getConteudo()}
     </div>

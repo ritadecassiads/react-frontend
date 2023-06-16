@@ -27,3 +27,5 @@
 -> Fazer login na Home futuramente
 
 -> Alterar a equipe com a tarefa atualizada com "feito = true"
+-> Tratar o erro para quando as tabelas estiverem vazias 
+-> 
